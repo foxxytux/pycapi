@@ -36,6 +36,15 @@
         state: started
         enabled: yes
 
+    - name: Run local Docker registry
+      docker_container:
+        name: registry
+        image: registry:2
+        state: started
+        restart_policy: always
+        published_ports:
+          - "5000:5000"
+
     # 3. K3s Installation
     - name: Install K3s (Lightweight Kubernetes)
       shell: curl -sfL https://get.k3s.io | sh -
@@ -73,6 +82,7 @@
       debug:
         msg: 
           - "SUCCESS! Everything is installed."
-          - "URL: https://{{ ansible_host }}:{{ argo_port.stdout }}"
+          - "Local Registry: {{ ansible_host }}:5000"
+          - "ArgoCD URL: https://{{ ansible_host }}:{{ argo_port.stdout }}"
           - "User: admin"
           - "Password: {{ argo_password.stdout }}"
